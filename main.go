@@ -112,14 +112,29 @@ func GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": users})
 }
 
+func HealthCheck(c *gin.Context) {
+	sqlDB, err := DB.DB()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "database": "connection_failed"})
+		return
+	}
+
+	if err := sqlDB.Ping(); err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"status": "unhealthy", "database": "unreachable"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "up", "database": "connected"})
+}
+
 // --- Main Entry Point ---
 
 func main() {
 	// 1. Load Environment Variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file" + err.Error())
+	// }
 
 	// 2. Connect to Database
 	ConnectDatabase()
@@ -128,6 +143,7 @@ func main() {
 	r := gin.Default()
 
 	// 4. Define Routes
+	r.GET("/health", HealthCheck)
 	r.POST("/users", CreateUser) // Write to Table 1
 	r.POST("/posts", CreatePost) // Write to Table 2
 	r.GET("/users", GetUsers)    // Fetch from Table 1 (and 2 via relation)
