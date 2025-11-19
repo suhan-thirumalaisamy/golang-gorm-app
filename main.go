@@ -35,9 +35,9 @@ var DB *gorm.DB
 
 func ConnectDatabase() {
 	// Load connection string from .env
-	dsn := os.Getenv("DATABASE_URL")
+	dsn := os.Getenv("DB_CONNECTION_STRING")
 	if dsn == "" {
-		log.Fatal("DATABASE_URL not set in .env file")
+		log.Fatal("DB_CONNECTION_STRING not set in .env file")
 	}
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
