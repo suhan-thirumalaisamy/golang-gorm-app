@@ -131,10 +131,10 @@ func HealthCheck(c *gin.Context) {
 
 func main() {
 	// 1. Load Environment Variables
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file" + err.Error())
-	// }
+	err := godotenv.Load()
+	if err != nil {
+		log.Print("Error loading .env file " + err.Error())
+	}
 
 	// 2. Connect to Database
 	ConnectDatabase()
